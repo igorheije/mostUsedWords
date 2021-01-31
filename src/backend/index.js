@@ -1,7 +1,15 @@
-const { ipcMain } = require('electron')
+import { ipcMain } from 'electron'
 
-ipcMain.on('blabla', (event,arg)=>{
-    console.log(arg);
+const pathsToRows = require('./pathsToRows')
+const prepareData = require('./prepareData')
+const groupWords = require('./groupWords')
 
-    event.reply('blabla', 'pong')
+ipcMain.on('process-subtitles', (event,paths)=>{
+
+    pathsToRows(paths)
+        .then(rows => prepareData(rows))
+        .then(word=> groupWords(word))
+        .then(groupedWords=>event.reply('process-subtitles',groupedWords)
+    )
+
 })
